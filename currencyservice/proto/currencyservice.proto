@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package microshopping;
+
+option go_package = "./proto;microshopping";
+
+// -----------------Currency service-----------------
+
+// Interface
+service CurrencyService {
+  // get the supported currencies
+  rpc GetSupportedCurrencies(Empty) returns (GetSupportedCurrenciesResponse) {}
+  // convert
+  rpc Convert(CurrencyConversionRequest) returns (Money) {}
+}
+
+message Empty {}
+
+// Current Currency Description
+message Money {
+  // Currency code e.g. EUR,USD 
+  string currency_code = 1;
+
+  // Currency unit
+  // ex: if currencyCode is USD, then 1 unit is 1 dollar.
+  int64 units = 2;
+
+  // Quantity in nanometer (10^-9) units.
+  // The value must be between -9999999999 and +9999999999.
+  // If the unit is positive, nanometers must be positive or zero.
+  // If the units are zero, nanometers can be positive, zero, or negative.
+  // If the unit is negative, the nanometer must be negative or zero.
+
+  // ex: $-1.75 is expressed as Units = -1 and Nano = -75000000.
+  int32 nanos = 3;
+}
+
+  // Get Supported Currencies Response 
+message GetSupportedCurrenciesResponse {
+  // Returns a slice of the string
+  repeated string currency_codes = 1;
+}
+
+// Currency Conversion Request 
+message CurrencyConversionRequest {
+  Money from = 1;
+  string to_code = 2;
+}
