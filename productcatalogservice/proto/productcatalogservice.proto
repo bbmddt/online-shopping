@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package microshopping;
+
+option go_package = "./proto;microshopping";
+
+// 当前币种描述
+message Money {
+    string currency_code = 1;
+
+    int64 units = 2;
+  
+    int32 nanos = 3;
+  }
+
+message Empty {}
+
+// --------------Product Catalog----------------
+
+// Interface
+service ProductCatalogService {
+    rpc ListProducts(Empty) returns (ListProductsResponse) {}
+    rpc GetProduct(GetProductRequest) returns (Product) {}
+    rpc SearchProducts(SearchProductsRequest) returns (SearchProductsResponse) {}
+}
+
+// Pruduct
+message Product {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    string picture = 4;
+    Money price_usd = 5;
+    repeated string categories = 6;
+}
+
+// plp response
+message ListProductsResponse {
+    repeated Product products = 1;
+}
+
+// get Product
+message GetProductRequest {
+    // query by id 
+    string id = 1;
+}
+
+// search Product
+message SearchProductsRequest {
+    string query = 1;
+}
+
+// search response
+message SearchProductsResponse {
+    repeated Product results = 1;
+}
