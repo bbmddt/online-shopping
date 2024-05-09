@@ -20,7 +20,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 当前币种描述
+// Current Currency Description
 type Money struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

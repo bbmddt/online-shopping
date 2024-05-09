@@ -4,7 +4,7 @@ package microshopping;
 
 option go_package = "./proto;microshopping";
 
-// 当前币种描述
+// Current Currency Description
 message Money {
     string currency_code = 1;
 
