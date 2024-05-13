@@ -1,10 +1,10 @@
 package main
 
 import (
+	handler "checkoutservice/handler"
+	pb "checkoutservice/proto"
 	"fmt"
 	"net"
-	handler "recommendationservice/handler"
-	pb "recommendationservice/proto"
 	"strconv"
 
 	"github.com/hashicorp/consul/api"
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
-const PORT = 50016
+const PORT = 50020
 const ADDRESS = "127.0.0.1"
 
 func GetGrpcConn(consulClient *api.Client, serviceName string, serviceTag string) *grpc.ClientConn {
@@ -52,8 +52,8 @@ func main() {
 
 	// init consul service registration
 	reg := api.AgentServiceRegistration{
-		Tags:    []string{"recommendationservice"},
-		Name:    "recommendationservice",
+		Tags:    []string{"checkoutservice"},
+		Name:    "checkoutservice",
 		Address: ADDRESS,
 		Port:    PORT,
 	}
@@ -69,8 +69,18 @@ func main() {
 	// init grpc server
 	grpcServer := grpc.NewServer()
 
+	// invoke other services
+	checkoutService := &handler.CheckoutService{
+		CartService:           pb.NewCartServiceClient(GetGrpcConn(consulClient, "cartservice", "cartservice")),
+		CurrencyService:       pb.NewCurrencyServiceClient(GetGrpcConn(consulClient, "currencyservice", "currencyservice")),
+		EmailService:          pb.NewEmailServiceClient(GetGrpcConn(consulClient, "emailservice", "emailservice")),
+		ProductCatalogService: pb.NewProductCatalogServiceClient(GetGrpcConn(consulClient, "productcatalogservice", "productcatalogservice")),
+		PaymentService:        pb.NewPaymentServiceClient(GetGrpcConn(consulClient, "paymentservice", "paymentservice")),
+		ShippingService:       pb.NewShippingServiceClient(GetGrpcConn(consulClient, "shippingservice", "shippingservice")),
+	}
+
 	// register grpc service
-	pb.RegisterRecommendationServiceServer(grpcServer, new(handler.RecommendationService))
+	pb.RegisterCheckoutServiceServer(grpcServer, checkoutService)
 
 	// start grpc listen
 	listen, err := net.Listen("tcp", ipport)
