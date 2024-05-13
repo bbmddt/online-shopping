@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package microshopping;
+
+option go_package = "./proto;microshopping";
+
+message CartItem {
+  string product_id = 1;
+  int32 quantity = 2;
+}
+
+message Empty {}
+
+message Address {
+  string street_address = 1;
+  string city = 2;
+  string state = 3;
+  string country = 4;
+  int32 zip_code = 5;
+}
+
+message Money {
+    string currency_code = 1;
+  
+    int64 units = 2;
+  
+    int32 nanos = 3;
+}  
+
+// --------------Email service-----------------
+
+// Send Order Confirmation Email interface
+service EmailService {
+  rpc SendOrderConfirmation(SendOrderConfirmationRequest) returns (Empty) {}
+}
+message OrderItem {
+  CartItem item = 1;
+  Money cost = 2;
+}
+message OrderResult {
+  string order_id = 1;
+  string shipping_tracking_id = 2;
+  Money shipping_cost = 3;
+  Address shipping_address = 4;
+  repeated OrderItem items = 5;
+}
+message SendOrderConfirmationRequest {
+  string email = 1;
+  OrderResult order = 2;
+}
