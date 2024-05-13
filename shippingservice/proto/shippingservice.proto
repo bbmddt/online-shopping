@@ -4,6 +4,11 @@ package microshopping;
 
 option go_package = "./proto;microshopping";
 
+message CartItem {
+  string product_id = 1;
+  int32 quantity = 2;
+}
+
 // Current Currency Description
 message Money {
   // Currency code e.g. EUR,USD 
@@ -23,21 +28,31 @@ message Money {
   int32 nanos = 3;
 }
 
-// --------------Payment service-----------------
+// ---------------Shipping Service----------
 // Interface
-service PaymentService {
-  rpc Charge(ChargeRequest) returns (ChargeResponse) {}
+service ShippingService {
+  rpc GetQuote(GetQuoteRequest) returns (GetQuoteResponse) {}
+  rpc ShipOrder(ShipOrderRequest) returns (ShipOrderResponse) {}
 }
 
-message CreditCardInfo {
-  string credit_card_number = 1;
-  int32 credit_card_cvv = 2;
-  int32 credit_card_expiration_year = 3;
-  int32 credit_card_expiration_month = 4;
+message GetQuoteRequest {
+  Address address = 1;
+  repeated CartItem items = 2;
 }
 
-message ChargeRequest {
-  Money amount = 1;
-  CreditCardInfo credit_card = 2;
+message GetQuoteResponse { Money cost_usd = 1; }
+
+message ShipOrderRequest {
+  Address address = 1;
+  repeated CartItem items = 2;
 }
-message ChargeResponse { string transaction_id = 1; }
+
+message ShipOrderResponse { string tracking_id = 1; }
+
+message Address {
+  string street_address = 1;
+  string city = 2;
+  string state = 3;
+  string country = 4;
+  int32 zip_code = 5;
+}
