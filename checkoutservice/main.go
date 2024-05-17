@@ -21,6 +21,10 @@ func GetGrpcConn(consulClient *api.Client, serviceName string, serviceTag string
 		fmt.Println("Error retrieving healthy service:", err)
 		return nil
 	}
+	if len(service) == 0 {
+		fmt.Println("No healthy services found")
+		return nil
+	}
 	s := service[0].Service
 	address := s.Address + ":" + strconv.Itoa(s.Port)
 	fmt.Printf("Service name: %v\n", serviceName)
@@ -28,9 +32,12 @@ func GetGrpcConn(consulClient *api.Client, serviceName string, serviceTag string
 
 	// Connect to the gRPC service with secure credentials
 	creds := credentials.NewClientTLSFromCert(nil, "")
-	grpcConn, _ := grpc.Dial(address, grpc.WithTransportCredentials(creds))
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(creds),
+	}
+	grpcConn, err := grpc.NewClient(address, opts...)
 	if err != nil {
-		fmt.Println("Error connecting to gRPC service:")
+		fmt.Println("Error connecting to gRPC service:", err)
 		return nil
 	}
 
