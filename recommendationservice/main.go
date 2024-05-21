@@ -9,7 +9,6 @@ import (
 
 	"github.com/hashicorp/consul/api"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 const PORT = 50016
@@ -31,9 +30,9 @@ func GetGrpcConn(consulClient *api.Client, serviceName string, serviceTag string
 	fmt.Printf("Address: %s\n", address)
 
 	// Connect to the gRPC service with secure credentials
-	creds := credentials.NewClientTLSFromCert(nil, "")
+	// creds := credentials.NewClientTLSFromCert(nil, "")
 	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(creds),
+		grpc.WithInsecure(),
 	}
 	grpcConn, err := grpc.NewClient(address, opts...)
 	if err != nil {
