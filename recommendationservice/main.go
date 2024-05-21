@@ -74,9 +74,12 @@ func main() {
 	//-----------------------grpc code--------------------------------
 	// init grpc server
 	grpcServer := grpc.NewServer()
+	recommendationservice := &handler.RecommendationService{
+		ProductCatalogService: pb.NewProductCatalogServiceClient(GetGrpcConn(consulClient, "productcatalogservice", "productcatalogservice")),
+	}
 
 	// register grpc service
-	pb.RegisterRecommendationServiceServer(grpcServer, new(handler.RecommendationService))
+	pb.RegisterRecommendationServiceServer(grpcServer, recommendationservice)
 
 	// start grpc listen
 	listen, err := net.Listen("tcp", ipport)
